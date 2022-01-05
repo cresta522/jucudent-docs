@@ -1,0 +1,80 @@
+@startuml
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "Users [ユーザマスタ]" as Users {
+  *id : number <<auto increment>>
+  --
+  family_name [姓] : string
+  given_name [名] : string
+  family_name_kana [姓] : string
+  given_name_kana [名] : string
+  last_logged_at [最終ログイン日] : datetime
+  current_tutoring_school_id [ログイン中の塾ID] : int
+  team_id [チームID] : int
+  --
+  getFullName [ユーザ名] : string
+}
+
+entity "Teams [チームマスタ]" as Teams {
+  *id : number <<auto increment>>
+  --
+  name : string
+  ordered_at : datetime
+  ordered_by : number <<FK>>
+  created_at : datetime
+  created_by : number <<FK>>
+  updated_at : datetime
+  updated_by : number <<FK>>
+}
+
+entity "Roles [権限マスタ]" as Roles {
+  *id : number <<auto increment>>
+  --
+  name : string
+}
+
+entity "RoleTeam [チームと権限の中間マスタ]" as RoleTeam {
+    team_id : int <<FK>>
+    role_id : int <<FK>>
+}
+
+entity "Companies [企業マスタ]" as Companies {
+  *id : number <<auto increment>>
+  --
+  administrator_id : int <<FK>>
+  name : string
+  kana : string
+  tel : string
+  postal_no : string
+  address : string
+  has_tutoring_school : boolean
+}
+
+entity "TutoringSchools [塾マスタ]" as TutoringSchools {
+  *id : number <<auto increment>>
+  --
+  company_id : int <<FK>>
+  name : string
+  kana : string
+  tel : string
+  postal_no : string
+  address : string
+}
+
+entity "TutoringSchoolUser [ユーザと塾の中間マスタ]" as TutoringSchoolUser {
+    user_id : int <<FK>>
+    tutoring_school_id : int <<FK>>
+}
+
+' リレーション
+
+Teams ||..o{ Users
+Roles ||.l.o{ RoleTeam
+RoleTeam ||.l.o{ Teams
+Users ||.r.o{ TutoringSchoolUser
+TutoringSchoolUser ||.r.o{ TutoringSchools
+TutoringSchools ||..o{ Companies
+
+@enduml
